@@ -9,7 +9,7 @@ use tokio::sync::oneshot;
 use crate::constants::{SETTINGS_STORE, WSL_ENABLED_KEY};
 
 const CLI_INSTALL_DIR: &str = ".kilo/bin";
-const CLI_BINARY_NAME: &str = "opencode";
+const CLI_BINARY_NAME: &str = "kilo"; // kilocode_change
 
 #[derive(serde::Deserialize)]
 pub struct ServerConfig {
@@ -69,7 +69,7 @@ pub fn install_cli(app: tauri::AppHandle) -> Result<String, String> {
         return Err("Sidecar binary not found".to_string());
     }
 
-    let temp_script = std::env::temp_dir().join("opencode-install.sh");
+    let temp_script = std::env::temp_dir().join("kilo-install.sh"); // kilocode_change
     std::fs::write(&temp_script, INSTALL_SCRIPT)
         .map_err(|e| format!("Failed to write install script: {}", e))?;
 
@@ -183,14 +183,14 @@ pub fn create_command(app: &tauri::AppHandle, args: &str, extra_env: &[(&str, St
 
     let mut envs = vec![
         (
-            "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY".to_string(),
+            "KILO_EXPERIMENTAL_ICON_DISCOVERY".to_string(),
             "true".to_string(),
         ),
         (
-            "OPENCODE_EXPERIMENTAL_FILEWATCHER".to_string(),
+            "KILO_EXPERIMENTAL_FILEWATCHER".to_string(),
             "true".to_string(),
         ),
-        ("OPENCODE_CLIENT".to_string(), "desktop".to_string()),
+        ("KILO_CLIENT".to_string(), "desktop".to_string()),
         (
             "XDG_STATE_HOME".to_string(),
             state_dir.to_string_lossy().to_string(),
@@ -208,26 +208,26 @@ pub fn create_command(app: &tauri::AppHandle, args: &str, extra_env: &[(&str, St
             let version = app.package_info().version.to_string();
             let mut script = vec![
                 "set -e".to_string(),
-                "BIN=\"$HOME/.opencode/bin/opencode\"".to_string(),
+                "BIN=\"$HOME/.kilo/bin/kilo\"".to_string(), // kilocode_change
                 "if [ ! -x \"$BIN\" ]; then".to_string(),
                 format!(
-                    "  curl -fsSL https://kilo.ai/install | bash -s -- --version {} --no-modify-path",
+                    "  curl -fsSL https://kilo.ai/cli/install | bash -s -- --version {} --no-modify-path", // kilocode_change
                     shell_escape(&version)
                 ),
                 "fi".to_string(),
             ];
 
             let mut env_prefix = vec![
-                "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY=true".to_string(),
-                "OPENCODE_EXPERIMENTAL_FILEWATCHER=true".to_string(),
-                "OPENCODE_CLIENT=desktop".to_string(),
+                "KILO_EXPERIMENTAL_ICON_DISCOVERY=true".to_string(),
+                "KILO_EXPERIMENTAL_FILEWATCHER=true".to_string(),
+                "KILO_CLIENT=desktop".to_string(),
                 "XDG_STATE_HOME=\"$HOME/.local/state\"".to_string(),
             ];
             env_prefix.extend(
                 envs.iter()
-                    .filter(|(key, _)| key != "OPENCODE_EXPERIMENTAL_ICON_DISCOVERY")
-                    .filter(|(key, _)| key != "OPENCODE_EXPERIMENTAL_FILEWATCHER")
-                    .filter(|(key, _)| key != "OPENCODE_CLIENT")
+                    .filter(|(key, _)| key != "KILO_EXPERIMENTAL_ICON_DISCOVERY")
+                    .filter(|(key, _)| key != "KILO_EXPERIMENTAL_FILEWATCHER")
+                    .filter(|(key, _)| key != "KILO_CLIENT")
                     .filter(|(key, _)| key != "XDG_STATE_HOME")
                     .map(|(key, value)| format!("{}={}", key, shell_escape(value))),
             );
@@ -282,8 +282,8 @@ pub fn serve(
     tracing::info!(port, "Spawning sidecar");
 
     let envs = [
-        ("OPENCODE_SERVER_USERNAME", "opencode".to_string()),
-        ("OPENCODE_SERVER_PASSWORD", password.to_string()),
+        ("KILO_SERVER_USERNAME", "kilo".to_string()), // kilocode_change
+        ("KILO_SERVER_PASSWORD", password.to_string()),
     ];
 
     let (mut rx, child) = create_command(
@@ -292,7 +292,7 @@ pub fn serve(
         &envs,
     )
     .spawn()
-    .expect("Failed to spawn opencode");
+    .expect("Failed to spawn kilo"); // kilocode_change
 
     tokio::spawn(async move {
         let mut exit_tx = Some(exit_tx);

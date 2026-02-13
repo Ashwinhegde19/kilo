@@ -693,6 +693,11 @@ export const dict = {
   "session.delete.title": "Slett sesjon",
   "session.delete.confirm": 'Slette sesjonen "{{name}}"?',
   "session.delete.button": "Slett sesjon",
+  "session.untitled": "Uten tittel",
+  "session.recent": "Nylige",
+  "session.search.placeholder": "Søk i sesjoner...",
+  "session.empty": "Ingen sesjoner ennå. Klikk + for å starte en ny samtale.",
+
   "workspace.new": "Nytt arbeidsområde",
   "workspace.type.local": "lokal",
   "workspace.type.sandbox": "sandkasse",
@@ -762,6 +767,8 @@ export const dict = {
   "settings.aboutKiloCode.title": "Om Kilo Code",
 
   "session.messages.empty": "Start en samtale ved å skrive en melding nedenfor.",
+  "session.messages.welcome":
+    "Kilo Code er en AI-kodingsassistent. Be den om å bygge funksjoner, fikse feil eller forklare kodebasen din.",
   "session.messages.scrollToBottom": "Rull til bunnen",
 
   "dialog.model.noProviders": "Ingen leverandører",
@@ -777,10 +784,11 @@ export const dict = {
   "time.hoursAgo": "{{count}}t siden",
   "time.daysAgo": "{{count}}d siden",
   "time.monthsAgo": "{{count}} mnd. siden",
-
-  "session.search.placeholder": "Søk i sesjoner...",
-  "session.empty": "Ingen sesjoner ennå. Klikk + for å starte en ny samtale.",
-  "session.untitled": "Uten tittel",
+  "time.today": "I dag",
+  "time.yesterday": "I går",
+  "time.thisWeek": "Denne uken",
+  "time.thisMonth": "Denne måneden",
+  "time.older": "Eldre",
 
   "settings.aboutKiloCode.status.connected": "Tilkoblet",
   "settings.aboutKiloCode.status.connecting": "Kobler til...",
@@ -793,10 +801,21 @@ export const dict = {
   "settings.aboutKiloCode.extensionName": "Kilo Code-utvidelse",
 
   "settings.agentBehaviour.subtab.modes": "Moduser",
+  "settings.agentBehaviour.subtab.agents": "Agents",
   "settings.agentBehaviour.subtab.mcpServers": "MCP-servere",
   "settings.agentBehaviour.subtab.rules": "Regler",
   "settings.agentBehaviour.subtab.workflows": "Arbeidsflyter",
   "settings.agentBehaviour.subtab.skills": "Ferdigheter",
+
+  "settings.browser.description":
+    "Når aktivert kan AI-agenten samhandle med nettsider — navigere, klikke, skrive og ta skjermbilder. Et Chrome-vindu åpnes slik at du kan se agenten jobbe.",
+  "settings.browser.enable.title": "Aktiver nettleserautomatisering",
+  "settings.browser.enable.description": "Registrer Playwright MCP-serveren med CLI-backend.",
+  "settings.browser.systemChrome.title": "Bruk system-Chrome",
+  "settings.browser.systemChrome.description":
+    "Bruk den installerte Chrome-nettleseren i stedet for en separat Chromium-instans.",
+  "settings.browser.headless.title": "Headless-modus",
+  "settings.browser.headless.description": "Kjør i headless-modus (uten synlig nettleservindu).",
 
   "settings.language.description": 'Velg språket for Kilo Code-grensesnittet. "Auto" bruker VS Codes visningsspråk.',
   "settings.language.auto": "Auto (VS Code-språk)",

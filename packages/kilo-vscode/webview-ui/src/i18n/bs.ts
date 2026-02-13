@@ -718,6 +718,10 @@ export const dict = {
   "session.delete.title": "Izbriši sesiju",
   "session.delete.confirm": 'Izbriši sesiju "{{name}}"?',
   "session.delete.button": "Izbriši sesiju",
+  "session.untitled": "Bez naslova",
+  "session.recent": "Nedavne",
+  "session.search.placeholder": "Pretraži sesije...",
+  "session.empty": "Još nema sesija. Kliknite + za početak novog razgovora.",
 
   "workspace.new": "Novi radni prostor",
   "workspace.type.local": "lokalno",
@@ -788,6 +792,8 @@ export const dict = {
   "settings.aboutKiloCode.title": "O Kilo Code-u",
 
   "session.messages.empty": "Započnite razgovor unosom poruke ispod.",
+  "session.messages.welcome":
+    "Kilo Code je AI asistent za programiranje. Zatražite da gradi funkcionalnosti, ispravlja greške ili objasni vašu bazu koda.",
   "session.messages.scrollToBottom": "Pomakni se na dno",
 
   "dialog.model.noProviders": "Nema pružatelja",
@@ -803,10 +809,11 @@ export const dict = {
   "time.hoursAgo": "prije {{count}}h",
   "time.daysAgo": "prije {{count}}d",
   "time.monthsAgo": "prije {{count}} mj.",
-
-  "session.search.placeholder": "Pretraži sesije...",
-  "session.empty": "Još nema sesija. Kliknite + za pokretanje novog razgovora.",
-  "session.untitled": "Bez naslova",
+  "time.today": "Danas",
+  "time.yesterday": "Jučer",
+  "time.thisWeek": "Ove sedmice",
+  "time.thisMonth": "Ovog mjeseca",
+  "time.older": "Starije",
 
   "settings.aboutKiloCode.status.connected": "Povezano",
   "settings.aboutKiloCode.status.connecting": "Povezivanje...",
@@ -819,10 +826,21 @@ export const dict = {
   "settings.aboutKiloCode.extensionName": "Kilo Code ekstenzija",
 
   "settings.agentBehaviour.subtab.modes": "Modovi",
+  "settings.agentBehaviour.subtab.agents": "Agents",
   "settings.agentBehaviour.subtab.mcpServers": "MCP serveri",
   "settings.agentBehaviour.subtab.rules": "Pravila",
   "settings.agentBehaviour.subtab.workflows": "Tokovi rada",
   "settings.agentBehaviour.subtab.skills": "Vještine",
+
+  "settings.browser.description":
+    "Kada je omogućeno, AI agent može komunicirati s web stranicama — navigirati, klikati, tipkati i snimati ekran. Chrome prozor će se otvoriti kako biste mogli pratiti rad agenta.",
+  "settings.browser.enable.title": "Omogući automatizaciju preglednika",
+  "settings.browser.enable.description": "Registriraj Playwright MCP server s CLI pozadinom.",
+  "settings.browser.systemChrome.title": "Koristi sistemski Chrome",
+  "settings.browser.systemChrome.description":
+    "Koristite instalirani Chrome preglednik umjesto zasebne Chromium instance.",
+  "settings.browser.headless.title": "Headless način",
+  "settings.browser.headless.description": "Pokreni u headless načinu (bez vidljivog prozora preglednika).",
 
   "settings.language.description": 'Odaberite jezik za Kilo Code sučelje. "Auto" koristi jezik prikaza VS Code-a.',
   "settings.language.auto": "Auto (VS Code jezik)",

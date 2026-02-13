@@ -18,7 +18,7 @@ function mimeToModality(mime: string): Modality | undefined {
 }
 
 export namespace ProviderTransform {
-  export const OUTPUT_TOKEN_MAX = Flag.OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX || 32_000
+  export const OUTPUT_TOKEN_MAX = Flag.KILO_EXPERIMENTAL_OUTPUT_TOKEN_MAX || 32_000
 
   // Maps npm package to the key the AI SDK expects for providerOptions
   function sdkKey(npm: string): string | undefined {
@@ -261,8 +261,7 @@ export namespace ProviderTransform {
     msgs = unsupportedParts(msgs, model)
     msgs = normalizeMessages(msgs, model, options)
 
-    // kilocode_change - skip caching for OpenRouter/Kilo Gateway to avoid modifying thinking blocks
-    // Anthropic API requires thinking/redacted_thinking blocks to remain exactly unchanged
+    // kilocode_change - identify OpenRouter/Kilo Gateway for thinking block stripping
     const isOpenRouterOrKilo =
       model.api.npm === "@openrouter/ai-sdk-provider" || model.api.npm === "@kilocode/kilo-gateway"
 
@@ -336,13 +335,12 @@ export namespace ProviderTransform {
     }
 
     if (
-      !isOpenRouterOrKilo &&
-      (model.providerID === "anthropic" ||
-        model.api.id.includes("anthropic") ||
-        model.api.id.includes("claude") ||
-        model.id.includes("anthropic") ||
-        model.id.includes("claude") ||
-        model.api.npm === "@ai-sdk/anthropic")
+      model.providerID === "anthropic" ||
+      model.api.id.includes("anthropic") ||
+      model.api.id.includes("claude") ||
+      model.id.includes("anthropic") ||
+      model.id.includes("claude") ||
+      model.api.npm === "@ai-sdk/anthropic"
     ) {
       msgs = applyCaching(msgs, model.providerID)
     }
@@ -473,19 +471,15 @@ export namespace ProviderTransform {
             },
           }
         }
-        // Claude/Anthropic models support reasoning via effort levels through OpenRouter API
-        // OpenRouter uses OpenAI-style effort names: xhigh=95%, high=80%, medium=50%, low=20%, minimal=10%
-        // kilocode_change - expose "max" (Anthropic naming) to users, mapped to "xhigh" (OpenRouter naming) on the wire
+        // kilocode_change - Claude models via Kilo Gateway: no reasoning variants
+        // (reasoning is broken due to OpenRouter SDK duplicating reasoning_details)
         if (
           model.id.includes("claude") ||
           model.id.includes("anthropic") ||
           model.api.id.includes("claude") ||
           model.api.id.includes("anthropic")
         ) {
-          const ANTHROPIC_EFFORTS = ["none", "minimal", ...WIDELY_SUPPORTED_EFFORTS, "max"]
-          return Object.fromEntries(
-            ANTHROPIC_EFFORTS.map((effort) => [effort, { reasoning: { effort: effort === "max" ? "xhigh" : effort } }]),
-          )
+          return {}
         }
         // GPT models via Kilo need encrypted reasoning content to avoid org_id mismatch
         if (!model.id.includes("gpt") && !model.id.includes("gemini-3")) return {}
@@ -774,16 +768,6 @@ export namespace ProviderTransform {
       if (input.model.api.id.includes("gemini-3")) {
         result["reasoning"] = { effort: "high" }
       }
-      // kilocode_change - enable reasoning for Claude models via Kilo Gateway
-      if (
-        input.model.api.npm === "@kilocode/kilo-gateway" &&
-        (input.model.id.includes("claude") ||
-          input.model.id.includes("anthropic") ||
-          input.model.api.id.includes("claude") ||
-          input.model.api.id.includes("anthropic"))
-      ) {
-        result["reasoning"] = { effort: "medium" }
-      }
     }
 
     if (
@@ -893,18 +877,9 @@ export namespace ProviderTransform {
       return { thinkingConfig: { thinkingBudget: 0 } }
     }
     if (model.providerID === "openrouter" || model.api.npm === "@kilocode/kilo-gateway") {
-      // kilocode_change - add Kilo Gateway support with model-specific handling
+      // kilocode_change - add Kilo Gateway support
       if (model.api.id.includes("google")) {
         return { reasoning: { enabled: false } }
-      }
-      // Claude models need reasoning.effort format (OpenRouter API)
-      if (
-        model.id.includes("claude") ||
-        model.id.includes("anthropic") ||
-        model.api.id.includes("claude") ||
-        model.api.id.includes("anthropic")
-      ) {
-        return { reasoning: { effort: "minimal" } }
       }
       // Other models use reasoningEffort (AI SDK format)
       return { reasoningEffort: "minimal" }
