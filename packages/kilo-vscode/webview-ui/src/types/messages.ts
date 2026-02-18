@@ -8,6 +8,12 @@ export type ConnectionState = "connecting" | "connected" | "disconnected" | "err
 // Session status (simplified from backend)
 export type SessionStatus = "idle" | "busy" | "retry"
 
+// Rich status info for retry countdown and future extensions
+export type SessionStatusInfo =
+  | { type: "idle" }
+  | { type: "busy" }
+  | { type: "retry"; attempt: number; message: string; next: number }
+
 // Tool state for tool parts
 export type ToolState =
   | { status: "pending"; input: Record<string, unknown> }
@@ -103,6 +109,7 @@ export interface PermissionRequest {
   id: string
   sessionID: string
   toolName: string
+  patterns: string[]
   args: Record<string, unknown>
   message?: string
   tool?: { messageID: string; callID: string }
@@ -298,6 +305,7 @@ export interface Config {
 export interface ReadyMessage {
   type: "ready"
   serverInfo?: ServerInfo
+  extensionVersion?: string
   vscodeLanguage?: string
   languageOverride?: string
 }
@@ -326,6 +334,10 @@ export interface SessionStatusMessage {
   type: "sessionStatus"
   sessionID: string
   status: SessionStatus
+  // Retry fields (present when status === "retry")
+  attempt?: number
+  message?: string
+  next?: number
 }
 
 export interface PermissionRequestMessage {
@@ -434,6 +446,13 @@ export interface ChatCompletionResultMessage {
   requestId: string
 }
 
+export interface FileSearchResultMessage {
+  type: "fileSearchResult"
+  paths: string[]
+  dir: string
+  requestId: string
+}
+
 export interface QuestionRequestMessage {
   type: "questionRequest"
   question: QuestionRequest
@@ -482,6 +501,25 @@ export interface NotificationSettingsLoadedMessage {
   }
 }
 
+// Agent Manager worktree session metadata
+export interface AgentManagerSessionMetaMessage {
+  type: "agentManager.sessionMeta"
+  sessionId: string
+  mode: import("../context/worktree-mode").SessionMode
+  branch?: string
+  path?: string
+  parentBranch?: string
+}
+
+// Agent Manager worktree setup progress
+export interface AgentManagerWorktreeSetupMessage {
+  type: "agentManager.worktreeSetup"
+  status: "creating" | "starting" | "ready" | "error"
+  message: string
+  sessionId?: string
+  branch?: string
+}
+
 export type ExtensionMessage =
   | ReadyMessage
   | ConnectionStateMessage
@@ -507,6 +545,7 @@ export type ExtensionMessage =
   | AgentsLoadedMessage
   | AutocompleteSettingsLoadedMessage
   | ChatCompletionResultMessage
+  | FileSearchResultMessage
   | QuestionRequestMessage
   | QuestionResolvedMessage
   | QuestionErrorMessage
@@ -514,6 +553,8 @@ export type ExtensionMessage =
   | ConfigLoadedMessage
   | ConfigUpdatedMessage
   | NotificationSettingsLoadedMessage
+  | AgentManagerSessionMetaMessage
+  | AgentManagerWorktreeSetupMessage
 
 // ============================================
 // Messages FROM webview TO extension
@@ -651,6 +692,12 @@ export interface RequestChatCompletionMessage {
   requestId: string
 }
 
+export interface RequestFileSearchMessage {
+  type: "requestFileSearch"
+  query: string
+  requestId: string
+}
+
 export interface ChatCompletionAcceptedMessage {
   type: "chatCompletionAccepted"
   suggestionLength?: number
@@ -676,6 +723,25 @@ export interface UpdateConfigMessage {
 
 export interface RequestNotificationSettingsMessage {
   type: "requestNotificationSettings"
+}
+
+export interface ResetAllSettingsRequest {
+  type: "resetAllSettings"
+}
+
+export interface SyncSessionRequest {
+  type: "syncSession"
+  sessionID: string
+}
+
+// Agent Manager worktree messages
+export interface CreateWorktreeSessionRequest {
+  type: "agentManager.createWorktreeSession"
+  text: string
+  providerID?: string
+  modelID?: string
+  agent?: string
+  files?: FileAttachment[]
 }
 
 export type WebviewMessage =
@@ -704,12 +770,16 @@ export type WebviewMessage =
   | RequestAutocompleteSettingsMessage
   | UpdateAutocompleteSettingMessage
   | RequestChatCompletionMessage
+  | RequestFileSearchMessage
   | ChatCompletionAcceptedMessage
   | UpdateSettingRequest
   | RequestBrowserSettingsMessage
   | RequestConfigMessage
   | UpdateConfigMessage
   | RequestNotificationSettingsMessage
+  | ResetAllSettingsRequest
+  | SyncSessionRequest
+  | CreateWorktreeSessionRequest
 
 // ============================================
 // VS Code API type

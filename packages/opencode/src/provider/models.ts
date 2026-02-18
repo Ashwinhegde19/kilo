@@ -82,7 +82,7 @@ export namespace ModelsDev {
     status: z.enum(["alpha", "beta", "deprecated"]).optional(),
     options: z.record(z.string(), z.any()),
     headers: z.record(z.string(), z.string()).optional(),
-    provider: z.object({ npm: z.string() }).optional(),
+    provider: z.object({ npm: z.string().optional(), api: z.string().optional() }).optional(),
     variants: z.record(z.string(), z.record(z.string(), z.any())).optional(),
   })
   export type Model = z.infer<typeof Model>
@@ -120,6 +120,10 @@ export namespace ModelsDev {
     const result = await Data()
     // kilocode_change start
     const providers = result as Record<string, Provider>
+
+    if (providers["kilo"]) {
+      delete providers["kilo"]
+    }
 
     // Inject kilo provider with dynamic model fetching
     if (!providers["kilo"]) {

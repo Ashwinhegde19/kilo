@@ -19,7 +19,7 @@ import type {
 export class HttpClient {
   private readonly baseUrl: string
   private readonly authHeader: string
-  private readonly authUsername = "opencode"
+  private readonly authUsername = "kilo"
 
   constructor(config: ServerConfig) {
     this.baseUrl = config.baseUrl
@@ -458,6 +458,15 @@ export class HttpClient {
    */
   async oauthCallback(providerId: string, method: number, directory: string): Promise<boolean> {
     return this.request<boolean>("POST", `/provider/${providerId}/oauth/callback`, { method }, { directory })
+  }
+
+  // ============================================
+  // File Search Methods
+  // ============================================
+
+  async findFiles(query: string, directory: string): Promise<string[]> {
+    const params = new URLSearchParams({ query, dirs: "false", limit: "10" })
+    return this.request<string[]>("GET", `/find/file?${params.toString()}`, undefined, { directory })
   }
 
   // ============================================
